@@ -11,10 +11,19 @@ function calculate() {
     let catalyst = oil * 0.01;
     let additive = oil * 0.03;
 
-    // Fixed process parameters
-    let time = 60;        // minutes
-    let temperature = 60; // °C
-    let yieldPercent = 90;
+  let time, yieldPercent;
+
+if (oil <= 10) {
+    time = 45;
+    yieldPercent = 92;
+} else if (oil <= 50) {
+    time = 60;
+    yieldPercent = 90;
+} else {
+    time = 75;
+    yieldPercent = 88;
+}
+
 
     document.getElementById("alcohol").innerText = alcohol.toFixed(2);
     document.getElementById("catalyst").innerText = catalyst.toFixed(2);
@@ -24,4 +33,5 @@ function calculate() {
     document.getElementById("temp").innerText = temperature;
     document.getElementById("yield").innerText = yieldPercent;
 }
+
 
