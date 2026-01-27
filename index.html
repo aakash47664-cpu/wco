@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Degreaser Chemical Calculator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h2>Waste Cooking Oil Chemical Calculator</h2>
+
+    <label>Enter Waste Cooking Oil Amount (mL):</label>
+    <input type="number" id="oilAmount" placeholder="e.g. 1000">
+
+    <button onclick="calculate()">CALCULATE</button>
+
+    <div class="result">
+        <p><strong>Alcohol Required:</strong> <span id="alcohol">-</span> mL</p>
+        <p><strong>Catalyst Required:</strong> <span id="catalyst">-</span> g</p>
+        <p><strong>Additive Required:</strong> <span id="additive">-</span> mL</p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
