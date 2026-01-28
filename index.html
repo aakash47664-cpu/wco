@@ -1,94 +1,132 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>WCO Degreaser Calculator</title>
+<meta charset="UTF-8">
+<title>WCO Degreaser Decision Support Tool</title>
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-        }
-
-        .container {
-            width: 450px;
-            margin: 60px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-
-        h2, h3 {
-            text-align: center;
-        }
-
-        input {
-            width: 100%;
-            padding: 8px;
-            margin: 10px 0;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #2b7cff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-
-        button:hover {
-            background: #1a5ed8;
-        }
-
-        .result {
-            margin-top: 20px;
-            background: #eef3ff;
-            padding: 15px;
-            border-radius: 5px;
-        }
-
-        p {
-            margin: 6px 0;
-        }
-    </style>
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f4f8;
+}
+.container {
+    width: 700px;
+    margin: 40px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+h2, h3 {
+    text-align: center;
+}
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+button {
+    background: #2b7cff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+button:hover {
+    background: #1a5ed8;
+}
+.result {
+    margin-top: 20px;
+    background: #eef3ff;
+    padding: 15px;
+    border-radius: 5px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+table, th, td {
+    border: 1px solid #999;
+}
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+.note {
+    font-size: 13px;
+    color: #444;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-    <h2>Waste Cooking Oil Degreaser Calculator</h2>
+<h2>Waste Cooking Oil–Based Degreaser Calculator</h2>
 
-    <p>
-        Enter the amount of waste cooking oil (WCO) to get the exact quantity
-        of chemicals, reaction time, and expected yield.
-    </p>
+<p>
+This tool calculates chemical requirements, process parameters,
+expected yield, and sensitivity ranges for converting waste cooking oil
+into an eco-friendly industrial degreaser.
+</p>
 
-    <label><strong>Waste Cooking Oil Amount (mL):</strong></label>
-    <input type="number" id="oilAmount" placeholder="e.g. 12">
+<label><strong>Waste Cooking Oil Amount (mL):</strong></label>
+<input type="number" id="oilAmount" placeholder="Enter WCO amount">
 
-    <button onclick="calculate()">CALCULATE</button>
+<button onclick="calculate()">CALCULATE</button>
 
-    <div class="result">
-        <h3>Chemical Requirements</h3>
-        <p><strong>Ethanol / Methanol:</strong> <span id="alcohol">-</span> mL</p>
-        <p><strong>NaOH / KOH:</strong> <span id="catalyst">-</span> g</p>
-        <p><strong>Natural Surfactant:</strong> <span id="additive">-</span> mL</p>
+<div class="result">
 
-        <h3>Process Parameters</h3>
-        <p><strong>Reaction Time:</strong> <span id="time">-</span> minutes</p>
-        <p><strong>Reaction Temperature:</strong> <span id="temp">-</span> °C</p>
+<h3>Standard Chemical Requirements</h3>
+<p><strong>Ethanol / Methanol:</strong> <span id="alcohol">-</span> mL</p>
+<p><strong>NaOH / KOH:</strong> <span id="catalyst">-</span> g</p>
+<p><strong>Natural Surfactant:</strong> <span id="additive">-</span> mL</p>
 
-        <h3>Expected Output</h3>
-        <p><strong>Expected Yield:</strong> <span id="yield">-</span> %</p>
-        <p><strong>By-product:</strong> Glycerol</p>
-    </div>
+<h3>Process Parameters</h3>
+<p><strong>Reaction Time:</strong> <span id="time">-</span> minutes</p>
+<p><strong>Reaction Temperature:</strong> <span id="temp">-</span> °C</p>
 
+<h3>Expected Output</h3>
+<p><strong>Expected Yield:</strong> <span id="yield">-</span> %</p>
+<p><strong>By-product:</strong> Glycerol</p>
+
+<h3>Parameter Sensitivity Analysis</h3>
+
+<table>
+<tr>
+    <th>Case</th>
+    <th>Ethanol / Methanol (mL)</th>
+    <th>NaOH / KOH (g)</th>
+    <th>Surfactant (mL)</th>
+</tr>
+<tr>
+    <td>Minimum</td>
+    <td id="alc_min">-</td>
+    <td id="cat_min">-</td>
+    <td id="add_min">-</td>
+</tr>
+<tr>
+    <td>Standard</td>
+    <td id="alc_std">-</td>
+    <td id="cat_std">-</td>
+    <td id="add_std">-</td>
+</tr>
+<tr>
+    <td>Maximum</td>
+    <td id="alc_max">-</td>
+    <td id="cat_max">-</td>
+    <td id="add_max">-</td>
+</tr>
+</table>
+
+<p class="note">
+Note: Sensitivity analysis shows safe operating ranges based on
+literature-reported values.
+</p>
+
+</div>
 </div>
 
 <script>
@@ -100,14 +138,13 @@ function calculate() {
         return;
     }
 
-    // Chemical calculations
-    let alcohol = oil * 0.20;     // Ethanol / Methanol
-    let catalyst = oil * 0.01;    // NaOH / KOH
-    let additive = oil * 0.03;    // Natural surfactant
+    // Standard ratios
+    let alcohol = oil * 0.20;
+    let catalyst = oil * 0.01;
+    let additive = oil * 0.03;
 
     // Rule-based process parameters
     let time, yieldPercent;
-
     if (oil <= 10) {
         time = 45;
         yieldPercent = 92;
@@ -119,22 +156,31 @@ function calculate() {
         yieldPercent = 88;
     }
 
-    let temperature = 60; // constant
+    let temperature = 60;
 
-    // Display results
+    // Display standard values
     document.getElementById("alcohol").innerText = alcohol.toFixed(2);
-    document.getElementById("catalyst").innerText = catalyst.toFixed(2);
+    document.getElementById("catalyst").innerText = catalyst.toFixed(3);
     document.getElementById("additive").innerText = additive.toFixed(2);
-
     document.getElementById("time").innerText = time;
     document.getElementById("temp").innerText = temperature;
     document.getElementById("yield").innerText = yieldPercent;
+
+    // Sensitivity analysis
+    document.getElementById("alc_min").innerText = (oil * 0.18).toFixed(2);
+    document.getElementById("cat_min").innerText = (oil * 0.008).toFixed(3);
+    document.getElementById("add_min").innerText = (oil * 0.02).toFixed(2);
+
+    document.getElementById("alc_std").innerText = (oil * 0.20).toFixed(2);
+    document.getElementById("cat_std").innerText = (oil * 0.01).toFixed(3);
+    document.getElementById("add_std").innerText = (oil * 0.03).toFixed(2);
+
+    document.getElementById("alc_max").innerText = (oil * 0.22).toFixed(2);
+    document.getElementById("cat_max").innerText = (oil * 0.012).toFixed(3);
+    document.getElementById("add_max").innerText = (oil * 0.04).toFixed(2);
 }
 </script>
 
 </body>
 </html>
-
-
-
 
