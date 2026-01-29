@@ -1,10 +1,8 @@
 function calculate() {
 
-    // Read inputs
     let oil = parseFloat(document.getElementById("oilAmount").value);
     let ffa = parseFloat(document.getElementById("ffa").value);
 
-    // Validation
     if (isNaN(oil) || oil <= 0) {
         alert("Please enter a valid Waste Cooking Oil amount");
         return;
@@ -16,30 +14,26 @@ function calculate() {
     }
 
     /* =====================================
-       BASE VALUES (AVERAGE QUALITY OIL)
+       BASE VALUES (AVERAGE QUALITY)
        ===================================== */
-    let alcoholFactor = 0.20;   // 20%
-    let catalystFactor = 0.01;  // 1%
+    let alcoholFactor = 0.20;
+    let catalystFactor = 0.01;
     let timeAdjustment = 0;
     let yieldAdjustment = 0;
-    let quality;
 
     /* =====================================
-       FFA-BASED QUALITY ADJUSTMENT
+       FFA-BASED ADJUSTMENT (NO DISPLAY)
        ===================================== */
     if (ffa <= 1) {
-        quality = "Good quality oil";
         alcoholFactor = 0.18;
         catalystFactor = 0.008;
         timeAdjustment = -10;
         yieldAdjustment = +2;
     } 
     else if (ffa <= 3) {
-        quality = "Average quality oil";
-        // Standard values retained
+        // standard values
     } 
     else {
-        quality = "Poor quality oil";
         alcoholFactor = 0.22;
         catalystFactor = 0.012;
         timeAdjustment = +15;
@@ -51,7 +45,7 @@ function calculate() {
        ===================================== */
     let alcohol = alcoholFactor * oil;
     let catalyst = catalystFactor * oil;
-    let additive = 0.03 * oil;   // Surfactant fixed
+    let additive = 0.03 * oil;
 
     /* =====================================
        BASE PROCESS PARAMETERS (BATCH SIZE)
@@ -69,7 +63,7 @@ function calculate() {
         yieldPercent = 88;
     }
 
-    // Apply FFA-based corrections
+    // Apply FFA effect
     time = time + timeAdjustment;
     yieldPercent = yieldPercent + yieldAdjustment;
 
@@ -85,5 +79,4 @@ function calculate() {
     document.getElementById("time").innerText = time;
     document.getElementById("temp").innerText = temperature;
     document.getElementById("yield").innerText = yieldPercent;
-    document.getElementById("quality").innerText = quality;
 }
