@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>WCO Degreaser Decision Support Tool</title>
+<title>WCO Degreaser – Quality Aware Calculator</title>
 
 <style>
 body {
@@ -10,12 +10,12 @@ body {
     background: #f2f4f8;
 }
 .container {
-    width: 700px;
+    width: 750px;
     margin: 40px auto;
-    background: white;
-    padding: 20px;
+    background: #ffffff;
+    padding: 25px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
 }
 h2, h3 {
     text-align: center;
@@ -29,8 +29,8 @@ button {
     background: #2b7cff;
     color: white;
     border: none;
-    cursor: pointer;
     border-radius: 5px;
+    cursor: pointer;
 }
 button:hover {
     background: #1a5ed8;
@@ -39,19 +39,10 @@ button:hover {
     margin-top: 20px;
     background: #eef3ff;
     padding: 15px;
-    border-radius: 5px;
+    border-radius: 6px;
 }
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-table, th, td {
-    border: 1px solid #999;
-}
-th, td {
-    padding: 8px;
-    text-align: center;
+p {
+    margin: 6px 0;
 }
 .note {
     font-size: 13px;
@@ -67,19 +58,22 @@ th, td {
 <h2>Waste Cooking Oil–Based Degreaser Calculator</h2>
 
 <p>
-This tool calculates chemical requirements, process parameters,
-expected yield, and sensitivity ranges for converting waste cooking oil
-into an eco-friendly industrial degreaser.
+This tool computes chemical requirements and process parameters for an
+eco-friendly industrial degreaser, considering both oil quantity and
+oil quality (FFA).
 </p>
 
 <label><strong>Waste Cooking Oil Amount (mL):</strong></label>
-<input type="number" id="oilAmount" placeholder="Enter WCO amount">
+<input type="number" id="oilAmount" placeholder="e.g. 12">
+
+<label><strong>Free Fatty Acid (FFA %):</strong></label>
+<input type="number" id="ffa" placeholder="e.g. 2.5">
 
 <button onclick="calculate()">CALCULATE</button>
 
 <div class="result">
 
-<h3>Standard Chemical Requirements</h3>
+<h3>Chemical Requirements</h3>
 <p><strong>Ethanol / Methanol:</strong> <span id="alcohol">-</span> mL</p>
 <p><strong>NaOH / KOH:</strong> <span id="catalyst">-</span> g</p>
 <p><strong>Natural Surfactant:</strong> <span id="additive">-</span> mL</p>
@@ -90,40 +84,12 @@ into an eco-friendly industrial degreaser.
 
 <h3>Expected Output</h3>
 <p><strong>Expected Yield:</strong> <span id="yield">-</span> %</p>
+<p><strong>Oil Quality:</strong> <span id="quality">-</span></p>
 <p><strong>By-product:</strong> Glycerol</p>
 
-<h3>Parameter Sensitivity Analysis</h3>
-
-<table>
-<tr>
-    <th>Case</th>
-    <th>Ethanol / Methanol (mL)</th>
-    <th>NaOH / KOH (g)</th>
-    <th>Surfactant (mL)</th>
-</tr>
-<tr>
-    <td>Minimum</td>
-    <td id="alc_min">-</td>
-    <td id="cat_min">-</td>
-    <td id="add_min">-</td>
-</tr>
-<tr>
-    <td>Standard</td>
-    <td id="alc_std">-</td>
-    <td id="cat_std">-</td>
-    <td id="add_std">-</td>
-</tr>
-<tr>
-    <td>Maximum</td>
-    <td id="alc_max">-</td>
-    <td id="cat_max">-</td>
-    <td id="add_max">-</td>
-</tr>
-</table>
-
 <p class="note">
-Note: Sensitivity analysis shows safe operating ranges based on
-literature-reported values.
+Note: Calculations are rule-based estimates derived from literature-reported
+transesterification behavior.
 </p>
 
 </div>
@@ -131,20 +97,63 @@ literature-reported values.
 
 <script>
 function calculate() {
+
     let oil = parseFloat(document.getElementById("oilAmount").value);
+    let ffa = parseFloat(document.getElementById("ffa").value);
 
     if (isNaN(oil) || oil <= 0) {
-        alert("Please enter a valid waste cooking oil amount");
+        alert("Please enter a valid Waste Cooking Oil amount");
         return;
     }
 
-    // Standard ratios
-    let alcohol = oil * 0.20;
-    let catalyst = oil * 0.01;
-    let additive = oil * 0.03;
+    if (isNaN(ffa) || ffa < 0) {
+        alert("Please enter a valid FFA value");
+        return;
+    }
 
-    // Rule-based process parameters
+    /* =========================================
+       BASE VALUES (AVERAGE QUALITY OIL)
+       ========================================= */
+    let alcoholFactor = 0.20;
+    let catalystFactor = 0.01;
+    let timeAdjustment = 0;
+    let yieldAdjustment = 0;
+    let quality;
+
+    /* =========================================
+       FFA-BASED QUALITY ADJUSTMENT
+       ========================================= */
+    if (ffa <= 1) {
+        quality = "Good quality oil";
+        alcoholFactor = 0.18;
+        catalystFactor = 0.008;
+        timeAdjustment = -10;
+        yieldAdjustment = +2;
+    } 
+    else if (ffa <= 3) {
+        quality = "Average quality oil";
+        // Standard values retained
+    } 
+    else {
+        quality = "Poor quality oil";
+        alcoholFactor = 0.22;
+        catalystFactor = 0.012;
+        timeAdjustment = +15;
+        yieldAdjustment = -4;
+    }
+
+    /* =========================================
+       CHEMICAL CALCULATIONS
+       ========================================= */
+    let alcohol = alcoholFactor * oil;
+    let catalyst = catalystFactor * oil;
+    let additive = 0.03 * oil; // Surfactant constant
+
+    /* =========================================
+       BASE PROCESS PARAMETERS (BATCH SIZE)
+       ========================================= */
     let time, yieldPercent;
+
     if (oil <= 10) {
         time = 45;
         yieldPercent = 92;
@@ -156,31 +165,28 @@ function calculate() {
         yieldPercent = 88;
     }
 
+    /* Apply FFA correction */
+    time = time + timeAdjustment;
+    yieldPercent = yieldPercent + yieldAdjustment;
+
     let temperature = 60;
 
-    // Display standard values
+    /* =========================================
+       DISPLAY RESULTS
+       ========================================= */
     document.getElementById("alcohol").innerText = alcohol.toFixed(2);
     document.getElementById("catalyst").innerText = catalyst.toFixed(3);
     document.getElementById("additive").innerText = additive.toFixed(2);
+
     document.getElementById("time").innerText = time;
     document.getElementById("temp").innerText = temperature;
     document.getElementById("yield").innerText = yieldPercent;
-
-    // Sensitivity analysis
-    document.getElementById("alc_min").innerText = (oil * 0.18).toFixed(2);
-    document.getElementById("cat_min").innerText = (oil * 0.008).toFixed(3);
-    document.getElementById("add_min").innerText = (oil * 0.02).toFixed(2);
-
-    document.getElementById("alc_std").innerText = (oil * 0.20).toFixed(2);
-    document.getElementById("cat_std").innerText = (oil * 0.01).toFixed(3);
-    document.getElementById("add_std").innerText = (oil * 0.03).toFixed(2);
-
-    document.getElementById("alc_max").innerText = (oil * 0.22).toFixed(2);
-    document.getElementById("cat_max").innerText = (oil * 0.012).toFixed(3);
-    document.getElementById("add_max").innerText = (oil * 0.04).toFixed(2);
+    document.getElementById("quality").innerText = quality;
 }
 </script>
 
 </body>
 </html>
+
+
 
