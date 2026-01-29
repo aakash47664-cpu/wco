@@ -1,29 +1,62 @@
 function calculate() {
 
-    // Read input
+    // Read inputs
     let oil = parseFloat(document.getElementById("oilAmount").value);
+    let ffa = parseFloat(document.getElementById("ffa").value);
 
-    // Input validation
+    // Validation
     if (isNaN(oil) || oil <= 0) {
         alert("Please enter a valid Waste Cooking Oil amount");
         return;
     }
 
-    /* ================================
-       STANDARD CHEMICAL CALCULATIONS
-       ================================ */
+    if (isNaN(ffa) || ffa < 0) {
+        alert("Please enter a valid FFA value");
+        return;
+    }
 
-    // Fixed ratios (literature-based)
-    let alcohol = 0.20 * oil;     // Ethanol / Methanol
-    let catalyst = 0.01 * oil;    // NaOH / KOH
-    let additive = 0.03 * oil;    // Natural surfactant
+    /* =====================================
+       BASE VALUES (AVERAGE QUALITY OIL)
+       ===================================== */
+    let alcoholFactor = 0.20;   // 20%
+    let catalystFactor = 0.01;  // 1%
+    let timeAdjustment = 0;
+    let yieldAdjustment = 0;
+    let quality;
 
-    /* ================================
-       RULE-BASED PROCESS PARAMETERS
-       ================================ */
+    /* =====================================
+       FFA-BASED QUALITY ADJUSTMENT
+       ===================================== */
+    if (ffa <= 1) {
+        quality = "Good quality oil";
+        alcoholFactor = 0.18;
+        catalystFactor = 0.008;
+        timeAdjustment = -10;
+        yieldAdjustment = +2;
+    } 
+    else if (ffa <= 3) {
+        quality = "Average quality oil";
+        // Standard values retained
+    } 
+    else {
+        quality = "Poor quality oil";
+        alcoholFactor = 0.22;
+        catalystFactor = 0.012;
+        timeAdjustment = +15;
+        yieldAdjustment = -4;
+    }
 
-    let time;          // reaction time (minutes)
-    let yieldPercent;  // expected yield (%)
+    /* =====================================
+       CHEMICAL CALCULATIONS
+       ===================================== */
+    let alcohol = alcoholFactor * oil;
+    let catalyst = catalystFactor * oil;
+    let additive = 0.03 * oil;   // Surfactant fixed
+
+    /* =====================================
+       BASE PROCESS PARAMETERS (BATCH SIZE)
+       ===================================== */
+    let time, yieldPercent;
 
     if (oil <= 10) {
         time = 45;
@@ -36,12 +69,15 @@ function calculate() {
         yieldPercent = 88;
     }
 
-    let temperature = 60; // constant temperature (°C)
+    // Apply FFA-based corrections
+    time = time + timeAdjustment;
+    yieldPercent = yieldPercent + yieldAdjustment;
 
-    /* ================================
-       DISPLAY STANDARD RESULTS
-       ================================ */
+    let temperature = 60;
 
+    /* =====================================
+       DISPLAY RESULTS
+       ===================================== */
     document.getElementById("alcohol").innerText = alcohol.toFixed(2);
     document.getElementById("catalyst").innerText = catalyst.toFixed(3);
     document.getElementById("additive").innerText = additive.toFixed(2);
@@ -49,27 +85,5 @@ function calculate() {
     document.getElementById("time").innerText = time;
     document.getElementById("temp").innerText = temperature;
     document.getElementById("yield").innerText = yieldPercent;
-
-    /* ================================
-       PARAMETER SENSITIVITY ANALYSIS
-       ================================ */
-
-    // Minimum case
-    document.getElementById("alc_min").innerText = (oil * 0.18).toFixed(2);
-    document.getElementById("cat_min").innerText = (oil * 0.008).toFixed(3);
-    document.getElementById("add_min").innerText = (oil * 0.02).toFixed(2);
-
-    // Standard case
-    document.getElementById("alc_std").innerText = (oil * 0.20).toFixed(2);
-    document.getElementById("cat_std").innerText = (oil * 0.01).toFixed(3);
-    document.getElementById("add_std").innerText = (oil * 0.03).toFixed(2);
-
-    // Maximum case
-    document.getElementById("alc_max").innerText = (oil * 0.22).toFixed(2);
-    document.getElementById("cat_max").innerText = (oil * 0.012).toFixed(3);
-    document.getElementById("add_max").innerText = (oil * 0.04).toFixed(2);
+    document.getElementById("quality").innerText = quality;
 }
-
-
-
-
