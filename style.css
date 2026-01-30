@@ -1,37 +1,177 @@
+/* ---------- GLOBAL ---------- */
+* {
+  box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background: #f4f6f8;
+  margin: 0;
+  font-family: "Segoe UI", Arial, sans-serif;
+  background-color: #f4f6f8;
+  color: #333;
 }
 
+/* ---------- LAYOUT ---------- */
 .container {
-    width: 400px;
-    margin: 80px auto;
-    padding: 20px;
-    background: white;
-    border-radius: 8px;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  display: flex;
+  min-height: 100vh;
 }
 
-input {
-    width: 90%;
-    padding: 8px;
-    margin: 10px 0;
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  width: 270px;
+  background: linear-gradient(180deg, #1f3c88, #162a5c);
+  color: #fff;
+  padding: 20px;
 }
 
-button {
-    padding: 10px 20px;
-    background: #2b7cff;
-    color: white;
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
+.sidebar h2 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 1px;
 }
 
-button:hover {
-    background: #1a5ed8;
+.sidebar p {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 20px;
 }
 
-.result {
-    margin-top: 20px;
+.sidebar label {
+  font-size: 13px;
+  margin-top: 15px;
+  display: block;
 }
+
+.sidebar input[type="range"] {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.sidebar select {
+  width: 100%;
+  padding: 6px;
+  margin-top: 6px;
+  border-radius: 4px;
+  border: none;
+}
+
+.sidebar span {
+  font-size: 13px;
+}
+
+.sidebar button {
+  width: 100%;
+  margin-top: 25px;
+  padding: 10px;
+  background-color: #2ecc71;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background-color: #27ae60;
+}
+
+/* ---------- MAIN AREA ---------- */
+.main {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* ---------- KPI CARDS ---------- */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  transition: transform 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+}
+
+.card h4 {
+  font-size: 13px;
+  color: #777;
+  margin: 0;
+}
+
+.card p {
+  font-size: 22px;
+  margin-top: 6px;
+  font-weight: bold;
+  color: #1f3c88;
+}
+
+/* ---------- WARNING ---------- */
+.warning {
+  margin-top: 15px;
+  padding: 12px;
+  background-color: #fff3cd;
+  border-left: 5px solid #f39c12;
+  border-radius: 6px;
+  font-size: 14px;
+  display: none;
+}
+
+/* ---------- CHARTS ---------- */
+.charts {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.chart-box {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 280px !important;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 900px) {
+  .cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .charts {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    width: 220px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+}
+
