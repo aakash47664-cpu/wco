@@ -2,12 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Micro-Batch Degreaser Simulator</title>
+  <title>WCO Degreaser Simulator</title>
 
-  <!-- CSS -->
   <link rel="stylesheet" href="style.css">
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
@@ -15,30 +12,20 @@
 
 <div class="container">
 
-  <!-- SIDEBAR -->
   <div class="sidebar">
-    <h2>PROCESS SIMULATOR</h2>
-    <p>Micro-Batch Degreaser System</p>
+    <h2>Degreaser Simulator</h2>
 
-    <label>Batch Scale</label>
-    <select id="scale">
-      <option value="micro">Micro-Batch (10–500 mL)</option>
-      <option value="lab">Lab Scale (0.5–10 L)</option>
-      <option value="pilot">Pilot (10–50 L)</option>
-    </select>
-
-    <label>WCO Amount</label>
-    <input type="range" id="wco">
-    <span id="wcoVal">–</span>
+    <label>WCO Amount (Liters)</label>
+    <input type="range" id="wco" min="1" max="100" value="10" step="1">
+    <span id="wcoVal">10 L</span>
 
     <label>FFA (%)</label>
     <input type="range" id="ffa" min="0" max="5" step="0.5" value="2">
-    <span id="ffaVal">2</span> %
+    <span id="ffaVal">2 %</span>
 
-    <button id="runBtn">Run Simulation</button>
+    <button onclick="runSimulation()">Run</button>
   </div>
 
-  <!-- MAIN -->
   <div class="main">
 
     <div class="cards">
@@ -46,23 +33,20 @@
       <div class="card"><h4>Catalyst</h4><p id="catalyst">–</p></div>
       <div class="card"><h4>Time</h4><p id="time">–</p></div>
       <div class="card"><h4>Yield</h4><p id="yield">–</p></div>
-      <div class="card"><h4>Cost / L</h4><p id="cost">–</p></div>
     </div>
 
-    <div class="warning" id="warningBox"></div>
-
     <div class="charts">
-      <div class="chart-box"><canvas id="yieldChart"></canvas></div>
-      <div class="chart-box"><canvas id="timeChart"></canvas></div>
+      <canvas id="yieldChart"></canvas>
+      <canvas id="timeChart"></canvas>
     </div>
 
   </div>
 </div>
 
-<!-- JS -->
 <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
