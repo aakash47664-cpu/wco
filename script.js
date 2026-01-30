@@ -1,82 +1,139 @@
-function calculate() {
+// Global chart variables
+let yieldChart = null;
+let timeChart = null;
 
-    let oil = parseFloat(document.getElementById("oilAmount").value);
-    let ffa = parseFloat(document.getElementById("ffa").value);
+// Main simulation function
+function runSimulation() {
 
-    if (isNaN(oil) || oil <= 0) {
-        alert("Please enter a valid Waste Cooking Oil amount");
-        return;
-    }
+  // Read inputs
+  const wco = Number(document.getElementById("wco").value);   // L
+  const ffa = Number(document.getElementById("ffa").value);   // %
+  const scale = document.getElementById("scale").value;
 
-    if (isNaN(ffa) || ffa < 0) {
-        alert("Please enter a valid FFA value");
-        return;
-    }
+  // -----------------------------
+  // BASE PARAMETERS (EMPIRICAL)
+  // -----------------------------
+  let alcoholFactor = 0.20;     // 20% of WCO
+  let catalystFactor = 0.01;    // 1% of WCO
+  let baseTime = 60;            // minutes
+  let baseYield = 92;           // %
 
-    /* =====================================
-       BASE VALUES (AVERAGE QUALITY)
-       ===================================== */
-    let alcoholFactor = 0.20;
-    let catalystFactor = 0.01;
-    let timeAdjustment = 0;
-    let yieldAdjustment = 0;
+  // -----------------------------
+  // FFA-BASED ADJUSTMENTS
+  // -----------------------------
+  let ffaPenalty = ffa * 1.5;   // yield loss per % FFA
+  let reactionTime = baseTime;
 
-    /* =====================================
-       FFA-BASED ADJUSTMENT (NO DISPLAY)
-       ===================================== */
-    if (ffa <= 1) {
-        alcoholFactor = 0.18;
-        catalystFactor = 0.008;
-        timeAdjustment = -10;
-        yieldAdjustment = +2;
-    } 
-    else if (ffa <= 3) {
-        // standard values
-    } 
-    else {
-        alcoholFactor = 0.22;
-        catalystFactor = 0.012;
-        timeAdjustment = +15;
-        yieldAdjustment = -4;
-    }
+  if (ffa > 3) {
+    alcoholFactor = 0.22;
+    catalystFactor = 0.012;
+    reactionTime += 15;
+  } else if (ffa <= 1) {
+    alcoholFactor = 0.18;
+    catalystFactor = 0.008;
+    reactionTime -= 10;
+  }
 
-    /* =====================================
-       CHEMICAL CALCULATIONS
-       ===================================== */
-    let alcohol = alcoholFactor * oil;
-    let catalyst = catalystFactor * oil;
-    let additive = 0.03 * oil;
+  // -----------------------------
+  // SCALE-BASED ADJUSTMENTS
+  // -----------------------------
+  if (scale === "pilot") reactionTime += 5;
+  if (scale === "msme") reactionTime += 15;
 
-    /* =====================================
-       BASE PROCESS PARAMETERS (BATCH SIZE)
-       ===================================== */
-    let time, yieldPercent;
+  // -----------------------------
+  // FINAL CALCULATIONS
+  // -----------------------------
+  const alcohol = wco * alcoholFactor;
+  const catalyst = wco * catalystFactor;
+  const expectedYield = Math.max(baseYield - ffaPenalty, 75);
 
-    if (oil <= 10) {
-        time = 45;
-        yieldPercent = 92;
-    } else if (oil <= 50) {
-        time = 60;
-        yieldPercent = 90;
-    } else {
-        time = 75;
-        yieldPercent = 88;
-    }
+  // -----------------------------
+  // UPDATE KPI CARDS
+  // -----------------------------
+  document.getElementById("alcohol").innerText =
+    alcohol.toFixed(2) + " L";
 
-    // Apply FFA effect
-    time = time + timeAdjustment;
-    yieldPercent = yieldPercent + yieldAdjustment;
+  document.getElementById("catalyst").innerText =
+    catalyst.toFixed(3) + " kg";
 
-    let temperature = 60;
+  document.getElementById("time").innerText =
+    reactionTime + " min";
 
-    /* =====================================
-       DISPLAY RESULTS
-       ===================================== */
-    document.getElementById("alcohol").innerText = alcohol.toFixed(2);
-    document.getElementById("catalyst").innerText = catalyst.toFixed(3);
-    document.getElementById("additive").innerText = additive.toFixed(2);
+  document.getElementById("yield").innerText =
+    expectedYield.toFixed(0) + " %";
 
-    document.getElementById("time").innerText = time;
-    document.getElementById("temp").innerText = temperature;
-    document.getElementById("yield").innerText = yieldPercent;
+  // -----------------------------
+  // WARNINGS
+  // -----------------------------
+  const warningBox = document.getElementById("warningBox");
+  if (wco > 50 || ffa > 3) {
+    warningBox.style.display = "block";
+  } else {
+    warningBox.style.display = "none";
+  }
+
+  // -----------------------------
+  // UPDATE CHARTS
+  // -----------------------------
+  updateCharts();
 }
+
+// -----------------------------
+// CHART FUNCTIONS
+// -----------------------------
+function updateCharts() {
+
+  // Yield vs FFA
+  const ffaValues = [0, 1, 2, 3, 4, 5];
+  const yieldValues = ffaValues.map(v => 92 - v * 1.5);
+
+  // Reaction Time vs WCO
+  const wcoValues = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+  const timeValues = wcoValues.map(v => 50 + v * 0.3);
+
+  // Destroy old charts
+  if (yieldChart) yieldChart.destroy();
+  if (timeChart) timeChart.destroy();
+
+  // Create Yield Chart
+  yieldChart = new Chart(document.getElementById("yieldChart"), {
+    type: "line",
+    data: {
+      labels: ffaValues,
+      datasets: [{
+        label: "Yield vs FFA (%)",
+        data: yieldValues,
+        borderColor: "green",
+        backgroundColor: "rgba(0,128,0,0.1)",
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } }
+    }
+  });
+
+  // Create Time Chart
+  timeChart = new Chart(document.getElementById("timeChart"), {
+    type: "bar",
+    data: {
+      labels: wcoValues,
+      datasets: [{
+        label: "Reaction Time vs WCO (L)",
+        data: timeValues,
+        backgroundColor: "#3498db"
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: true } }
+    }
+  });
+}
+
+// Initial auto-run
+runSimulation();
+
+}
+
