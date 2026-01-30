@@ -1,44 +1,93 @@
+
 function calculate() {
 
-  // Read inputs
-  let wco_ml = Number(document.getElementById("wco").value);
-  let ffa = Number(document.getElementById("ffa").value);
+    // Read inputs
+    let oil = parseFloat(document.getElementById("oilAmount").value);
+    let ffa = parseFloat(document.getElementById("ffa").value);
 
-  // Convert mL to L
-  let wco = wco_ml / 1000;
+    // Validation
+    if (isNaN(oil) || oil <= 0) {
+        alert("Please enter a valid Waste Cooking Oil amount");
+        return;
+    }
 
-  // Basic assumptions
-  let alcohol_factor = 0.20;   // 20%
-  let catalyst_factor = 0.01;  // 1%
-  let base_time = 60;          // min
-  let base_yield = 92;         // %
+    if (isNaN(ffa) || ffa < 0) {
+        alert("Please enter a valid FFA value");
+        return;
+    }
 
-  // Adjust for FFA
-  if (ffa > 3) {
-    alcohol_factor = 0.22;
-    catalyst_factor = 0.012;
-    base_time += 15;
-  }
+    /* =====================================
+       BASE VALUES (AVERAGE QUALITY OIL)
+       ===================================== */
+    let alcoholFactor = 0.20;   // 20%
+    let catalystFactor = 0.01;  // 1%
+    let timeAdjustment = 0;
+    let yieldAdjustment = 0;
+    let quality;
 
-  // Calculations
-  let alcohol = wco * alcohol_factor;
-  let catalyst = wco * catalyst_factor;
-  let yield_value = base_yield - (ffa * 1.5);
+    /* =====================================
+       FFA-BASED QUALITY ADJUSTMENT
+       ===================================== */
+    if (ffa <= 1) {
+        quality = "Good quality oil";
+        alcoholFactor = 0.18;
+        catalystFactor = 0.008;
+        timeAdjustment = -10;
+        yieldAdjustment = +2;
+    } 
+    else if (ffa <= 3) {
+        quality = "Average quality oil";
+        // Standard values retained
+    } 
+    else {
+        quality = "Poor quality oil";
+        alcoholFactor = 0.22;
+        catalystFactor = 0.012;
+        timeAdjustment = +15;
+        yieldAdjustment = -4;
+    }
 
-  // Display results
-  document.getElementById("alcohol").innerText =
-    alcohol.toFixed(3) + " L";
+    /* =====================================
+       CHEMICAL CALCULATIONS
+       ===================================== */
+    let alcohol = alcoholFactor * oil;
+    let catalyst = catalystFactor * oil;
+    let additive = 0.03 * oil;   // Surfactant fixed
 
-  document.getElementById("catalyst").innerText =
-    catalyst.toFixed(4) + " kg";
+    /* =====================================
+       BASE PROCESS PARAMETERS (BATCH SIZE)
+       ===================================== */
+    let time, yieldPercent;
 
-  document.getElementById("time").innerText =
-    base_time + " minutes";
+    if (oil <= 10) {
+        time = 45;
+        yieldPercent = 92;
+    } else if (oil <= 50) {
+        time = 60;
+        yieldPercent = 90;
+    } else {
+        time = 75;
+        yieldPercent = 88;
+    }
 
-  document.getElementById("yield").innerText =
-    yield_value.toFixed(1) + " %";
+    // Apply FFA-based corrections
+    time = time + timeAdjustment;
+    yieldPercent = yieldPercent + yieldAdjustment;
+
+    let temperature = 60;
+
+    /* =====================================
+       DISPLAY RESULTS
+       ===================================== */
+    document.getElementById("alcohol").innerText = alcohol.toFixed(2);
+    document.getElementById("catalyst").innerText = catalyst.toFixed(3);
+    document.getElementById("additive").innerText = additive.toFixed(2);
+
+    document.getElementById("time").innerText = time;
+    document.getElementById("temp").innerText = temperature;
+    document.getElementById("yield").innerText = yieldPercent;
+    document.getElementById("quality").innerText = quality;
 }
-
 
 
 
