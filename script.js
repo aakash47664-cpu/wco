@@ -1,6 +1,7 @@
-let yieldChart, timeChart;
+let yieldChart = null;
+let timeChart = null;
 
-// DOM elements
+// DOM
 const scale = document.getElementById("scale");
 const wco = document.getElementById("wco");
 const ffa = document.getElementById("ffa");
@@ -16,19 +17,21 @@ const yieldEl = document.getElementById("yield");
 const costEl = document.getElementById("cost");
 const warningBox = document.getElementById("warningBox");
 
-// ---------------- SCALE HANDLING ----------------
+// -------- SCALE HANDLING --------
 function updateWcoRange() {
   if (scale.value === "micro") {
     wco.min = 10;
     wco.max = 500;
     wco.step = 10;
     wco.value = 100;
-  } else if (scale.value === "lab") {
+  } 
+  else if (scale.value === "lab") {
     wco.min = 0.5;
     wco.max = 10;
     wco.step = 0.5;
     wco.value = 1;
-  } else {
+  } 
+  else {
     wco.min = 10;
     wco.max = 50;
     wco.step = 1;
@@ -38,19 +41,21 @@ function updateWcoRange() {
 }
 
 function updateWcoText() {
-  if (scale.value === "micro")
-    wcoVal.innerText = (wco.value / 1000).toFixed(2) + " L";
-  else
+  if (scale.value === "micro") {
+    wcoVal.innerText =
+      wco.value + " mL (" + (wco.value / 1000).toFixed(3) + " L)";
+  } else {
     wcoVal.innerText = wco.value + " L";
+  }
 }
 
-ffa.oninput = () => ffaVal.innerText = ffa.value;
-
-// ---------------- MAIN SIMULATION ----------------
+// -------- MAIN SIMULATION --------
 function runSimulation() {
 
-  let wcoL = (scale.value === "micro") ? wco.value / 1000 : Number(wco.value);
-  let ffaValNum = Number(ffa.value);
+  const ffaValNum = Number(ffa.value);
+  const rawWco = Number(wco.value);
+
+  const wcoL = (scale.value === "micro") ? rawWco / 1000 : rawWco;
 
   let alcoholFactor = (ffaValNum > 3) ? 0.22 : (ffaValNum <= 1 ? 0.18 : 0.20);
   let catalystFactor = (ffaValNum > 3) ? 0.012 : (ffaValNum <= 1 ? 0.008 : 0.01);
@@ -66,12 +71,13 @@ function runSimulation() {
     yieldVal -= 3;
     alcohol *= 1.05;
     warningBox.style.display = "block";
-    warningBox.innerText = "Micro-batch mode active: lab-scale losses applied.";
+    warningBox.innerText =
+      "Micro-batch mode active: lab-scale losses considered.";
   } else {
     warningBox.style.display = "none";
   }
 
-  let cost = (alcohol * 60 + catalyst * 300 + 10) / wcoL;
+  const cost = (alcohol * 60 + catalyst * 300 + 10) / wcoL;
 
   alcoholEl.innerText = alcohol.toFixed(3) + " L";
   catalystEl.innerText = catalyst.toFixed(4) + " kg";
@@ -82,16 +88,20 @@ function runSimulation() {
   drawCharts(wcoL, ffaValNum, time);
 }
 
-// ---------------- CHARTS ----------------
+// -------- GRAPHS --------
 function drawCharts(wcoL, ffaValNum, baseTime) {
 
-  let ffaRange = [], yieldRange = [];
+  const ffaRange = [];
+  const yieldRange = [];
+
   for (let i = Math.max(0, ffaValNum - 2); i <= Math.min(5, ffaValNum + 2); i += 0.5) {
     ffaRange.push(i);
     yieldRange.push(92 - i * 1.5);
   }
 
-  let wcoRange = [], timeRange = [];
+  const wcoRange = [];
+  const timeRange = [];
+
   for (let i = Math.max(0.1, wcoL - 0.5); i <= wcoL + 0.5; i += 0.1) {
     wcoRange.push(i);
     timeRange.push(baseTime + i * 5);
@@ -100,22 +110,45 @@ function drawCharts(wcoL, ffaValNum, baseTime) {
   if (yieldChart) yieldChart.destroy();
   if (timeChart) timeChart.destroy();
 
-  yieldChart = new Chart(document.getElementById("yieldChart"), {
-    type: "line",
-    data: { labels: ffaRange, datasets: [{ label: "Yield vs FFA", data: yieldRange, borderColor: "green", fill: true }] }
-  });
+  yieldChart = new Chart(
+    document.getElementById("yieldChart"), {
+      type: "line",
+      data: {
+        labels: ffaRange,
+        datasets: [{
+          label: "Yield vs FFA",
+          data: yieldRange,
+          borderColor: "green",
+          fill: true
+        }]
+      }
+    }
+  );
 
-  timeChart = new Chart(document.getElementById("timeChart"), {
-    type: "bar",
-    data: { labels: wcoRange, datasets: [{ label: "Time vs WCO", data: timeRange, backgroundColor: "#3498db" }] }
-  });
+  timeChart = new Chart(
+    document.getElementById("timeChart"), {
+      type: "bar",
+      data: {
+        labels: wcoRange,
+        datasets: [{
+          label: "Time vs WCO",
+          data: timeRange,
+          backgroundColor: "#3498db"
+        }]
+      }
+    }
+  );
 }
 
-// INIT
+// -------- EVENTS --------
 scale.onchange = updateWcoRange;
+wco.oninput = updateWcoText;
+ffa.oninput = () => ffaVal.innerText = ffa.value;
 runBtn.onclick = runSimulation;
 
+// -------- INIT --------
 updateWcoRange();
 runSimulation();
+
 
 
