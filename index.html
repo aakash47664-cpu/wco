@@ -1,71 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>WCO Degreaser Process Calculator</title>
+<meta charset="UTF-8">
+<title>WCO Degreaser – Quality Aware Calculator</title>
 
-  <!-- Link CSS -->
-  <link rel="stylesheet" href="style.css">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f2f4f8;
+}
+.container {
+    width: 750px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.15);
+}
+h2, h3 {
+    text-align: center;
+}
+input, button {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+button {
+    background: #2b7cff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+button:hover {
+    background: #1a5ed8;
+}
+.result {
+    margin-top: 20px;
+    background: #eef3ff;
+    padding: 15px;
+    border-radius: 6px;
+}
+p {
+    margin: 6px 0;
+}
+.note {
+    font-size: 13px;
+    color: #444;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="app">
+<div class="container">
 
-    <h1>WCO Degreaser Process Calculator</h1>
-    <p class="subtitle">Micro-batch chemical requirement estimator</p>
+<h2>Waste Cooking Oil–Based Degreaser Calculator</h2>
 
-    <!-- INPUT SECTION -->
-    <div class="input-box">
+<p>
+This tool computes chemical requirements and process parameters for an
+eco-friendly industrial degreaser, considering both oil quantity and
+oil quality (FFA).
+</p>
 
-      <div>
-        <label for="wco">WCO Amount (mL)</label>
-        <input type="number" id="wco" placeholder="e.g. 10">
-      </div>
+<label><strong>Waste Cooking Oil Amount (mL):</strong></label>
+<input type="number" id="oilAmount" placeholder="e.g. 12">
 
-      <div>
-        <label for="ffa">FFA (%)</label>
-        <input type="number" id="ffa" placeholder="e.g. 2">
-      </div>
+<label><strong>Free Fatty Acid (FFA %):</strong></label>
+<input type="number" id="ffa" placeholder="e.g. 2.5">
 
-      <button onclick="calculate()">Calculate</button>
+<button onclick="calculate()">CALCULATE</button>
 
-    </div>
+<div class="result">
 
-    <!-- RESULT SECTION -->
-    <div class="result-box">
+<h3>Chemical Requirements</h3>
+<p><strong>Ethanol / Methanol:</strong> <span id="alcohol">-</span> mL</p>
+<p><strong>NaOH / KOH:</strong> <span id="catalyst">-</span> g</p>
+<p><strong>Natural Surfactant:</strong> <span id="additive">-</span> mL</p>
 
-      <div class="result-item">
-        <span>Alcohol Required</span>
-        <b id="alcohol">0.000 L</b>
-      </div>
+<h3>Process Parameters</h3>
+<p><strong>Reaction Time:</strong> <span id="time">-</span> minutes</p>
+<p><strong>Reaction Temperature:</strong> <span id="temp">-</span> °C</p>
 
-      <div class="result-item">
-        <span>Catalyst Required</span>
-        <b id="catalyst">0.0000 kg</b>
-      </div>
+<h3>Expected Output</h3>
+<p><strong>Expected Yield:</strong> <span id="yield">-</span> %</p>
+<p><strong>Oil Quality:</strong> <span id="quality">-</span></p>
+<p><strong>By-product:</strong> Glycerol</p>
 
-      <div class="result-item">
-        <span>Reaction Time</span>
-        <b id="time">60 minutes</b>
-      </div>
+<p class="note">
+Note: Calculations are rule-based estimates derived from literature-reported
+transesterification behavior.
+</p>
 
-      <div class="result-item">
-        <span>Expected Yield</span>
-        <b id="yield">89.0 %</b>
-      </div>
+</div>
+</div>
 
-    </div>
+<script>
+function calculate() {
 
-  </div>
+    let oil = parseFloat(document.getElementById("oilAmount").value);
+    let ffa = parseFloat(document.getElementById("ffa").value);
 
-  <!-- Link JS -->
-  <script src="script.js"></script>
+    if (isNaN(oil) || oil <= 0) {
+        alert("Please enter a valid Waste Cooking Oil amount");
+        return;
+    }
+
+    if (isNaN(ffa) || ffa < 0) {
+        alert("Please enter a valid FFA value");
+        return;
+    }
+
+    /* =========================================
+       BASE VALUES (AVERAGE QUALITY OIL)
+       ========================================= */
+    let alcoholFactor = 0.20;
+    let catalystFactor = 0.01;
+    let timeAdjustment = 0;
+    let yieldAdjustment = 0;
+    let quality;
+
+    /* =========================================
+       FFA-BASED QUALITY ADJUSTMENT
+       ========================================= */
+    if (ffa <= 1) {
+        quality = "Good quality oil";
+        alcoholFactor = 0.18;
+        catalystFactor = 0.008;
+        timeAdjustment = -10;
+        yieldAdjustment = +2;
+    } 
+    else if (ffa <= 3) {
+        quality = "Average quality oil";
+        // Standard values retained
+    } 
+    else {
+        quality = "Poor quality oil";
+        alcoholFactor = 0.22;
+        catalystFactor = 0.012;
+        timeAdjustment = +15;
+        yieldAdjustment = -4;
+    }
+
+    /* =========================================
+       CHEMICAL CALCULATIONS
+       ========================================= */
+    let alcohol = alcoholFactor * oil;
+    let catalyst = catalystFactor * oil;
+    let additive = 0.03 * oil; // Surfactant constant
+
+    /* =========================================
+       BASE PROCESS PARAMETERS (BATCH SIZE)
+       ========================================= */
+    let time, yieldPercent;
+
+    if (oil <= 10) {
+        time = 45;
+        yieldPercent = 92;
+    } else if (oil <= 50) {
+        time = 60;
+        yieldPercent = 90;
+    } else {
+        time = 75;
+        yieldPercent = 88;
+    }
+
+    /* Apply FFA correction */
+    time = time + timeAdjustment;
+    yieldPercent = yieldPercent + yieldAdjustment;
+
+    let temperature = 60;
+
+    /* =========================================
+       DISPLAY RESULTS
+       ========================================= */
+    document.getElementById("alcohol").innerText = alcohol.toFixed(2);
+    document.getElementById("catalyst").innerText = catalyst.toFixed(3);
+    document.getElementById("additive").innerText = additive.toFixed(2);
+
+    document.getElementById("time").innerText = time;
+    document.getElementById("temp").innerText = temperature;
+    document.getElementById("yield").innerText = yieldPercent;
+    document.getElementById("quality").innerText = quality;
+}
+</script>
 
 </body>
 </html>
-
-
 
 
 
