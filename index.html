@@ -1,265 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Degreaser Process Simulator</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f8;
-}
-
-/* Layout */
-.container {
-  display: flex;
-  height: 100vh;
-}
-
-/* Sidebar */
-.sidebar {
-  width: 260px;
-  background: #1f3c88;
-  color: white;
-  padding: 20px;
-}
-
-.sidebar h2 {
-  margin-top: 0;
-}
-
-.sidebar label {
-  margin-top: 15px;
-  display: block;
-  font-size: 14px;
-}
-
-.sidebar input, .sidebar select {
-  width: 100%;
-  margin-top: 5px;
-}
-
-.sidebar button {
-  margin-top: 20px;
-  width: 100%;
-  padding: 10px;
-  background: #2ecc71;
-  border: none;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* Main */
-.main {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-}
-
-/* Cards */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-}
-
-.card {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.card h4 {
-  margin: 0;
-  font-size: 14px;
-  color: #555;
-}
-
-.card p {
-  font-size: 22px;
-  margin: 5px 0 0;
-}
-
-/* Warning */
-.warning {
-  margin-top: 15px;
-  padding: 10px;
-  background: #fff3cd;
-  border-left: 5px solid #f39c12;
-  display: none;
-}
-
-/* Charts */
-.charts {
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-.chart-box {
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-}
-</style>
+  <title>WCO Degreaser Calculator</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container">
+<h2>WCO Degreaser Process Calculator</h2>
 
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <h2>DEGREASER SIMULATOR</h2>
-    <p style="font-size:13px;">Parameter Sensitivity Analysis</p>
+<label>WCO Amount (mL):</label><br>
+<input type="number" id="wco" placeholder="Enter WCO in mL"><br><br>
 
-    <label>WCO Amount (L)</label>
-    <input type="range" id="wco" min="1" max="100" value="50"
-           oninput="wcoVal.innerText=this.value">
-    <span id="wcoVal">50</span> L
+<label>FFA (%):</label><br>
+<input type="number" id="ffa" placeholder="Enter FFA %"><br><br>
 
-    <label>FFA Percentage (%)</label>
-    <input type="range" id="ffa" min="0" max="5" step="0.5" value="2"
-           oninput="ffaVal.innerText=this.value">
-    <span id="ffaVal">2</span> %
+<button onclick="calculate()">Calculate</button>
 
-    <label>Batch Scale</label>
-    <select id="scale">
-      <option value="lab">Lab (1–10 L)</option>
-      <option value="pilot">Pilot (10–50 L)</option>
-      <option value="msme">MSME (50–100 L)</option>
-    </select>
+<hr>
 
-    <button onclick="runSimulation()">Run Simulation</button>
-  </div>
+<p><b>Alcohol Required:</b> <span id="alcohol">–</span></p>
+<p><b>Catalyst Required:</b> <span id="catalyst">–</span></p>
+<p><b>Reaction Time:</b> <span id="time">–</span></p>
+<p><b>Expected Yield:</b> <span id="yield">–</span></p>
 
-  <!-- Main -->
-  <div class="main">
-
-    <!-- Cards -->
-    <div class="cards">
-      <div class="card">
-        <h4>Alcohol Required</h4>
-        <p id="alcohol">–</p>
-      </div>
-      <div class="card">
-        <h4>Catalyst Required</h4>
-        <p id="catalyst">–</p>
-      </div>
-      <div class="card">
-        <h4>Reaction Time</h4>
-        <p id="time">–</p>
-      </div>
-      <div class="card">
-        <h4>Expected Yield</h4>
-        <p id="yield">–</p>
-      </div>
-    </div>
-
-    <div class="warning" id="warningBox">
-      Large batch size or high FFA may require extended reaction time.
-    </div>
-
-    <!-- Charts -->
-    <div class="charts">
-      <div class="chart-box">
-        <canvas id="yieldChart"></canvas>
-      </div>
-      <div class="chart-box">
-        <canvas id="timeChart"></canvas>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<script>
-let yieldChart, timeChart;
-
-function runSimulation() {
-  const wco = Number(document.getElementById("wco").value);
-  const ffa = Number(document.getElementById("ffa").value);
-  const scale = document.getElementById("scale").value;
-
-  // Base values
-  let alcoholFactor = 0.20;
-  let catalystFactor = 0.01;
-  let time = 60;
-  let yieldVal = 92;
-
-  // FFA logic
-  yieldVal -= ffa * 1.5;
-  if (ffa > 3) {
-    alcoholFactor = 0.22;
-    catalystFactor = 0.012;
-    time += 15;
-  }
-
-  // Scale logic
-  if (scale === "pilot") time += 5;
-  if (scale === "msme") time += 15;
-
-  const alcohol = wco * alcoholFactor;
-  const catalyst = wco * catalystFactor;
-
-  // Update cards
-  document.getElementById("alcohol").innerText = alcohol.toFixed(2) + " L";
-  document.getElementById("catalyst").innerText = catalyst.toFixed(3) + " kg";
-  document.getElementById("time").innerText = time + " min";
-  document.getElementById("yield").innerText = yieldVal.toFixed(0) + " %";
-
-  // Warning
-  document.getElementById("warningBox").style.display =
-    (wco > 50 || ffa > 3) ? "block" : "none";
-
-  drawCharts(wco, ffa);
-}
-
-function drawCharts(wco, ffa) {
-  const ffaRange = [0,1,2,3,4,5];
-  const yieldData = ffaRange.map(x => 92 - x*1.5);
-
-  const wcoRange = [10,20,30,40,50,60,70,80,90,100];
-  const timeData = wcoRange.map(x => 50 + x*0.3);
-
-  if (yieldChart) yieldChart.destroy();
-  if (timeChart) timeChart.destroy();
-
-  yieldChart = new Chart(document.getElementById("yieldChart"), {
-    type: 'line',
-    data: {
-      labels: ffaRange,
-      datasets: [{
-        label: 'Yield vs FFA (%)',
-        data: yieldData,
-        borderColor: 'green',
-        fill: false
-      }]
-    }
-  });
-
-  timeChart = new Chart(document.getElementById("timeChart"), {
-    type: 'bar',
-    data: {
-      labels: wcoRange,
-      datasets: [{
-        label: 'Reaction Time vs WCO (L)',
-        data: timeData,
-        backgroundColor: '#3498db'
-      }]
-    }
-  });
-}
-
-// Initial run
-runSimulation();
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
 
