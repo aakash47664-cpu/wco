@@ -1,62 +1,66 @@
 body {
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: linear-gradient(135deg, #eef2f7, #dfe6f1);
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(135deg, #eef2ff, #f8fafc);
   margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.card {
+.app {
   background: white;
-  width: 380px;
-  padding: 30px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  width: 420px;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.12);
 }
 
-h2 {
-  margin-top: 0;
+h1 {
+  margin: 0;
+  font-size: 22px;
   color: #1f3c88;
-  text-align: center;
 }
 
 .subtitle {
-  text-align: center;
-  font-size: 13px;
-  color: #666;
-  margin-bottom: 25px;
-}
-
-label {
   font-size: 14px;
-  margin-top: 15px;
-  display: block;
+  color: #555;
+  margin: 8px 0 24px;
 }
 
-input {
+.input-box {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.input-box label {
+  font-size: 13px;
+  color: #333;
+}
+
+.input-box input {
   width: 100%;
   padding: 10px;
-  margin-top: 5px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
 }
 
-input:focus {
+.input-box input:focus {
   outline: none;
   border-color: #1f3c88;
 }
 
 button {
-  width: 100%;
-  margin-top: 25px;
+  grid-column: span 2;
   padding: 12px;
-  border: none;
-  border-radius: 8px;
   background: #1f3c88;
   color: white;
+  border: none;
+  border-radius: 10px;
   font-size: 15px;
   cursor: pointer;
 }
@@ -65,24 +69,23 @@ button:hover {
   background: #162a5c;
 }
 
-.result {
-  margin-top: 25px;
+.result-box {
   border-top: 1px solid #eee;
-  padding-top: 15px;
+  padding-top: 18px;
 }
 
-.result p {
+.result-item {
   display: flex;
   justify-content: space-between;
-  font-size: 14px;
-  margin: 8px 0;
+  padding: 10px 0;
+  font-size: 15px;
 }
 
-.result span {
-  color: #555;
+.result-item span {
+  color: #444;
 }
 
-.result b {
+.result-item b {
   color: #1f3c88;
 }
 
