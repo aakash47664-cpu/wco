@@ -29,7 +29,7 @@
 
     <label>WCO Amount</label>
     <input type="range" id="wco">
-    <span id="wcoVal"></span>
+    <span id="wcoVal">–</span>
 
     <label>FFA (%)</label>
     <input type="range" id="ffa" min="0" max="5" step="0.5" value="2">
@@ -41,7 +41,6 @@
   <!-- MAIN -->
   <div class="main">
 
-    <!-- KPI CARDS -->
     <div class="cards">
       <div class="card"><h4>Alcohol</h4><p id="alcohol">–</p></div>
       <div class="card"><h4>Catalyst</h4><p id="catalyst">–</p></div>
@@ -52,7 +51,6 @@
 
     <div class="warning" id="warningBox"></div>
 
-    <!-- CHARTS -->
     <div class="charts">
       <div class="chart-box"><canvas id="yieldChart"></canvas></div>
       <div class="chart-box"><canvas id="timeChart"></canvas></div>
@@ -65,6 +63,7 @@
 <script src="script.js"></script>
 </body>
 </html>
+
 
 
 
