@@ -1,138 +1,18 @@
-/* RESET */
-* {
-  box-sizing: border-box;
-}
-
-/* BODY */
 body {
-  margin: 0;
-  font-family: "Segoe UI", Arial, sans-serif;
-  background: #f4f6f8;
-  color: #333;
+  font-family: Arial, sans-serif;
+  padding: 30px;
+  background: #f9f9f9;
 }
 
-/* LAYOUT */
-.container {
-  display: flex;
-  min-height: 100vh;
+input {
+  padding: 5px;
+  width: 200px;
 }
 
-/* SIDEBAR */
-.sidebar {
-  width: 260px;
-  background: linear-gradient(180deg, #1f3c88, #162a5c);
-  color: white;
-  padding: 20px;
-}
-
-.sidebar h2 {
-  margin-top: 0;
-  font-size: 20px;
-}
-
-.sidebar label {
-  display: block;
-  margin-top: 18px;
-  font-size: 14px;
-}
-
-.sidebar input {
-  width: 100%;
-  margin-top: 5px;
-}
-
-.sidebar span {
-  font-size: 13px;
-  opacity: 0.9;
-}
-
-.sidebar button {
-  margin-top: 25px;
-  width: 100%;
-  padding: 10px;
-  border: none;
-  background: #2ecc71;
-  color: white;
-  font-size: 15px;
-  border-radius: 6px;
+button {
+  padding: 8px 15px;
   cursor: pointer;
 }
 
-.sidebar button:hover {
-  background: #27ae60;
-}
-
-/* MAIN AREA */
-.main {
-  flex: 1;
-  padding: 20px;
-}
-
-/* KPI CARDS */
-.cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 15px;
-}
-
-.card {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-.card h4 {
-  margin: 0;
-  font-size: 13px;
-  color: #777;
-}
-
-.card p {
-  margin-top: 8px;
-  font-size: 22px;
-  font-weight: bold;
-  color: #1f3c88;
-}
-
-/* CHARTS */
-.charts {
-  margin-top: 25px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-
-canvas {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .charts {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 600px) {
-  .container {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-  }
-
-  .cards {
-    grid-template-columns: 1fr;
-  }
-}
 
 
